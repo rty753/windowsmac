@@ -290,9 +290,9 @@ while ($true) {
 
     Write-Host ""
     Write-Host "  操作选项:" -ForegroundColor Yellow
-    Write-Host "  [回车] 随机更换MAC地址（最常用）" -ForegroundColor White
-    Write-Host "  [2]   手动输入MAC地址" -ForegroundColor White
-    Write-Host "  [3]   恢复出厂MAC地址" -ForegroundColor White
+    Write-Host "  [回车] 随机更换所有适配器MAC（最常用）" -ForegroundColor White
+    Write-Host "  [2]   手动输入MAC地址（选单个适配器）" -ForegroundColor White
+    Write-Host "  [3]   恢复所有适配器出厂MAC" -ForegroundColor White
     Write-Host "  [4]   刷新列表" -ForegroundColor White
     Write-Host "  [0]   退出" -ForegroundColor White
     Write-Host ""
@@ -302,14 +302,14 @@ while ($true) {
     switch ($choice) {
         '0' { exit }
         '1' {
-            $adapter = Select-Adapter $adapters
-            if ($adapter) {
+            Write-Host ""
+            Write-Host "  正在随机更换所有适配器MAC..." -ForegroundColor Yellow
+            foreach ($adapter in $adapters) {
                 $newMAC = New-RandomMAC
                 Set-NewMAC $adapter $newMAC | Out-Null
                 Write-Host ""
-                # 刷新列表
-                $adapters = @(Get-PhysicalAdapters)
             }
+            $adapters = @(Get-PhysicalAdapters)
         }
         '2' {
             $adapter = Select-Adapter $adapters
@@ -325,11 +325,13 @@ while ($true) {
             }
         }
         '3' {
-            $adapter = Select-Adapter $adapters
-            if ($adapter) {
+            Write-Host ""
+            Write-Host "  正在恢复所有适配器出厂MAC..." -ForegroundColor Yellow
+            foreach ($adapter in $adapters) {
                 Restore-OriginalMAC $adapter
-                $adapters = @(Get-PhysicalAdapters)
+                Write-Host ""
             }
+            $adapters = @(Get-PhysicalAdapters)
         }
         '4' {
             Write-Host "  正在刷新..." -ForegroundColor Yellow
